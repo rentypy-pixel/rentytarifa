@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarifario — Sistema de Precios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0d1b2a;--navy2:#16293d;--navy3:#1e3550;
+  --gold:#c9933a;--gold2:#e0b060;--gold-light:#f0d080;
+  --cream:#f5f0e8;--white:#ffffff;
+  --text:#e8e0d0;--text-dim:#8a9ab0;
+  --green:#2ecc71;--red:#e74c3c;
+  --season-baja:#27ae60;--season-media:#f39c12;
+  --season-alta:#e67e22;--season-especial:#8e44ad;
+  --radius:12px;--shadow:0 8px 32px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 60% at 20% 0%,rgba(201,147,58,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%,rgba(30,53,80,.8) 0%,transparent 60%);}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#0a1520,#16293d);border-bottom:1px solid rgba(201,147,58,.25);
+  padding:0 32px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.5);}
+.logo{display:flex;align-items:center;gap:14px;padding:18px 0;}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.logo-text h1{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold2);letter-spacing:.5px;}
+.logo-text p{font-size:11px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;}
+nav{display:flex;gap:4px;}
+.nav-btn{padding:8px 20px;border:none;background:none;color:var(--text-dim);font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:500;cursor:pointer;border-radius:8px;transition:all .2s;letter-spacing:.3px;}
+.nav-btn:hover{background:rgba(255,255,255,.06);color:var(--text);}
+.nav-btn.active{background:rgba(201,147,58,.15);color:var(--gold2);border:1px solid rgba(201,147,58,.3);}
+.header-date{font-size:13px;color:var(--text-dim);text-align:right;}
+.header-date strong{color:var(--gold-light);display:block;font-size:15px;}
+
+/* MAIN */
+main{max-width:1280px;margin:0 auto;padding:32px 24px;}
+.tab-content{display:none;}.tab-content.active{display:block;}
+.section-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold2);margin-bottom:6px;}
+.section-sub{font-size:13px;color:var(--text-dim);margin-bottom:28px;}
+
+/* SEARCH PANEL */
+.search-panel{background:var(--navy2);border:1px solid rgba(201,147,58,.2);border-radius:var(--radius);
+  padding:28px 32px;margin-bottom:28px;box-shadow:var(--shadow);}
+.search-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:16px;align-items:end;}
+.field-group label{display:block;font-size:11px;font-weight:600;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+.field-group input,.field-group select{width:100%;background:var(--navy3);
+  border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--white);
+  font-family:'DM Sans',sans-serif;font-size:15px;padding:11px 14px;transition:border-color .2s;outline:none;}
+.field-group input:focus,.field-group select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,147,58,.12);}
+.field-group input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7) sepia(.5) saturate(3) hue-rotate(5deg);cursor:pointer;}
+.field-group select option{background:var(--navy2);}
+
+/* people selector */
+.people-selector{display:flex;gap:6px;flex-wrap:wrap;}
+.people-btn{width:38px;height:38px;border-radius:8px;border:1px solid rgba(255,255,255,.12);
+  background:var(--navy3);color:var(--text-dim);font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.people-btn:hover{border-color:var(--gold);color:var(--gold-light);}
+.people-btn.active{background:rgba(201,147,58,.2);border-color:var(--gold);color:var(--gold2);}
+
+.search-info{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:18px;
+  padding-top:18px;border-top:1px solid rgba(255,255,255,.06);}
+.info-badge{display:flex;align-items:center;gap:8px;background:var(--navy3);
+  padding:8px 14px;border-radius:20px;font-size:13px;}
+.info-badge .label{color:var(--text-dim);}.info-badge .value{font-weight:600;color:var(--white);}
+.season-badge{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;}
+.season-baja{background:rgba(39,174,96,.18);color:#6de0a0;border:1px solid rgba(39,174,96,.3);}
+.season-media{background:rgba(243,156,18,.18);color:#f0c060;border:1px solid rgba(243,156,18,.3);}
+.season-alta{background:rgba(230,126,34,.18);color:#f09050;border:1px solid rgba(230,126,34,.3);}
+.season-especial{background:rgba(142,68,173,.18);color:#c090f0;border:1px solid rgba(142,68,173,.3);}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-chip{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--text-dim);transition:all .2s;}
+.filter-chip:hover{border-color:var(--gold);color:var(--gold-light);}
+.filter-chip.active{background:rgba(201,147,58,.15);border-color:var(--gold);color:var(--gold-light);}
+
+/* UNITS GRID */
+.units-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;}
+.unit-card{background:var(--navy2);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius);
+  overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s;animation:fadeUp .3s ease both;}
+.unit-card:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.4);border-color:rgba(201,147,58,.3);}
+.unit-card.unavailable{opacity:.45;pointer-events:none;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.card-header{padding:18px 20px 14px;background:linear-gradient(135deg,var(--navy3),rgba(22,41,61,.6));
+  border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:flex-start;}
+.card-name{font-family:'Playfair Display',serif;font-size:17px;color:var(--gold2);font-weight:600;}
+.card-type{font-size:11px;color:var(--text-dim);letter-spacing:.8px;text-transform:uppercase;margin-top:2px;}
+.card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.card-season-dot{width:10px;height:10px;border-radius:50%;}
+.cap-badge{font-size:10px;color:var(--text-dim);background:rgba(255,255,255,.06);
+  padding:2px 7px;border-radius:10px;white-space:nowrap;}
+.unavail-badge{font-size:10px;color:#e74c3c;background:rgba(231,76,60,.1);
+  border:1px solid rgba(231,76,60,.2);padding:3px 9px;border-radius:10px;}
+
+.card-body{padding:16px 20px;}
+.price-main{display:flex;align-items:baseline;gap:6px;margin-bottom:2px;}
+.price-currency{font-size:13px;color:var(--text-dim);}
+.price-value{font-size:32px;font-weight:700;color:var(--white);letter-spacing:-.5px;line-height:1;}
+.price-label{font-size:12px;color:var(--text-dim);margin-bottom:14px;}
+.extra-persons-note{font-size:11px;color:var(--gold);background:rgba(201,147,58,.08);
+  border:1px solid rgba(201,147,58,.15);border-radius:6px;padding:4px 9px;margin-bottom:10px;display:inline-block;}
+
+.price-total-box{background:rgba(201,147,58,.1);border:1px solid rgba(201,147,58,.2);
+  border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.price-total-box .t-label{font-size:12px;color:var(--text-dim);}
+.price-total-box .t-value{font-size:18px;font-weight:700;color:var(--gold2);}
+
+.currency-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.currency-item{background:var(--navy3);border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;}
+.currency-item .c-sym{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;}
+.currency-item .c-val{font-size:14px;font-weight:600;color:var(--white);margin-top:2px;}
+.currency-item .c-total{font-size:11px;color:var(--text-dim);}
+
+.no-dates{text-align:center;padding:60px 20px;color:var(--text-dim);}
+.no-dates .icon{font-size:48px;margin-bottom:12px;}.no-dates p{font-size:15px;}
+
+/* DISCOUNT PANEL */
+.discount-toggle{width:100%;background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.18);
+  border-radius:8px;padding:9px 14px;margin-top:12px;cursor:pointer;display:flex;
+  align-items:center;justify-content:space-between;color:#f0a090;font-size:12px;font-weight:600;
+  letter-spacing:.4px;transition:all .2s;}
+.discount-toggle:hover{background:rgba(231,76,60,.13);border-color:rgba(231,76,60,.3);}
+.discount-toggle .arrow{transition:transform .2s;font-size:10px;}
+.discount-toggle.open .arrow{transform:rotate(180deg);}
+.discount-panel{display:none;margin-top:8px;background:rgba(10,15,25,.5);
+  border:1px solid rgba(231,76,60,.2);border-radius:8px;padding:14px;animation:fadeUp .2s ease;}
+.discount-panel.open{display:block;}
+.discount-header{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:#f0a090;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.discount-pct-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.dpct-btn{padding:5px 12px;border-radius:16px;border:1px solid rgba(231,76,60,.25);
+  background:transparent;color:#c09090;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.dpct-btn:hover{border-color:#e74c3c;color:#f0a090;background:rgba(231,76,60,.1);}
+.dpct-btn.active{background:rgba(231,76,60,.2);border-color:#e74c3c;color:#ffb0a0;}
+.discount-result{background:rgba(0,0,0,.3);border-radius:8px;padding:10px 12px;}
+.dr-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);}
+.dr-row:last-child{border-bottom:none;}
+.dr-label{font-size:11px;color:var(--text-dim);}
+.dr-val{font-size:13px;font-weight:700;color:#ffb0a0;}
+.dr-val.main{font-size:16px;color:#ff9080;}
+.dr-note{font-size:10px;color:rgba(231,76,60,.6);margin-top:8px;text-align:center;line-height:1.4;}
+
+/* CONFIG */
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px;}
+.config-card{background:var(--navy2);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius);overflow:hidden;}
+.config-card-header{padding:16px 20px;background:var(--navy3);border-bottom:1px solid rgba(255,255,255,.06);
+  font-family:'Playfair Display',serif;font-size:16px;color:var(--gold2);display:flex;align-items:center;gap:10px;}
+.config-card-body{padding:20px;}
+
+.rate-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.rate-flag{font-size:22px;width:32px;text-align:center;}
+.rate-info{flex:1;}.rate-name{font-size:13px;font-weight:500;}.rate-code{font-size:11px;color:var(--text-dim);}
+.rate-input-wrap{position:relative;display:flex;align-items:center;}
+.rate-prefix{position:absolute;left:10px;font-size:12px;color:var(--text-dim);pointer-events:none;}
+.rate-input{width:130px;background:var(--navy3);border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  color:var(--gold-light);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+  padding:8px 10px 8px 36px;text-align:right;outline:none;transition:border-color .2s;}
+.rate-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,147,58,.12);}
+.rate-suffix{font-size:11px;color:var(--text-dim);margin-left:6px;white-space:nowrap;}
+
+.season-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;
+  padding:12px;background:var(--navy3);border-radius:8px;}
+.season-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.season-info{flex:1;}.season-name{font-size:13px;font-weight:600;}.season-desc{font-size:11px;color:var(--text-dim);}
+.mult-input{width:80px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:6px;
+  color:var(--gold-light);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  padding:6px 10px;text-align:center;outline:none;}
+.mult-input:focus{border-color:var(--gold);}
+
+/* Prices table */
+.prices-table-wrap{overflow-x:auto;}
+.prices-table{width:100%;border-collapse:collapse;font-size:12px;}
+.prices-table th{padding:9px 10px;background:var(--navy3);color:var(--text-dim);font-weight:600;
+  font-size:10px;letter-spacing:.8px;text-transform:uppercase;text-align:center;
+  border-bottom:1px solid rgba(255,255,255,.08);}
+.prices-table th:first-child{text-align:left;}
+.prices-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;vertical-align:middle;}
+.prices-table td:first-child{text-align:left;font-weight:600;color:var(--gold2);font-size:13px;}
+.prices-table tr:hover td{background:rgba(255,255,255,.02);}
+.price-td-input{width:90px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;color:var(--gold-light);font-family:'DM Sans',sans-serif;font-size:12px;
+  font-weight:600;padding:5px 6px;text-align:right;outline:none;}
+.price-td-input:focus{border-color:var(--gold);}
+.cap-input{width:55px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;
+  font-weight:500;padding:5px 6px;text-align:center;outline:none;}
+.cap-input:focus{border-color:var(--gold);}
+
+/* Special dates */
+.special-dates-list{display:flex;flex-direction:column;gap:10px;}
+.special-date-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr auto;gap:8px;align-items:center;
+  background:var(--navy3);padding:10px 12px;border-radius:8px;}
+.special-date-row input,.special-date-row select{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 8px;outline:none;width:100%;}
+.special-date-row input:focus,.special-date-row select:focus{border-color:var(--gold);}
+.delete-btn{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.2);color:#e74c3c;
+  border-radius:6px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;transition:all .2s;flex-shrink:0;}
+.delete-btn:hover{background:rgba(231,76,60,.3);}
+.btn-add{display:flex;align-items:center;gap:8px;background:rgba(201,147,58,.12);
+  border:1px dashed rgba(201,147,58,.3);color:var(--gold2);font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:500;padding:10px 16px;border-radius:8px;cursor:pointer;
+  width:100%;justify-content:center;margin-top:8px;transition:all .2s;}
+.btn-add:hover{background:rgba(201,147,58,.2);border-style:solid;}
+
+.btn-save{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:var(--navy);
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;padding:12px 28px;border-radius:8px;
+  cursor:pointer;transition:all .2s;letter-spacing:.3px;display:flex;align-items:center;gap:8px;}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(201,147,58,.3);}
+.save-bar{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:24px;
+  padding-top:20px;border-top:1px solid rgba(255,255,255,.06);}
+.save-msg{font-size:13px;color:var(--green);opacity:0;transition:opacity .4s;}
+.save-msg.visible{opacity:1;}
+
+.breakdown-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.breakdown-item{font-size:11px;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.06);color:var(--text-dim);}
+
+.toast{position:fixed;bottom:28px;right:28px;background:#1e3550;border:1px solid rgba(201,147,58,.4);
+  border-radius:10px;padding:14px 20px;font-size:13px;color:var(--gold2);box-shadow:0 8px 24px rgba(0,0,0,.4);
+  opacity:0;transform:translateY(10px);transition:all .3s;z-index:999;pointer-events:none;}
+.toast.show{opacity:1;transform:none;}
+
+@media(max-width:768px){
+  .config-grid{grid-template-columns:1fr;}
+  .search-row{grid-template-columns:1fr 1fr;}
+  .units-grid{grid-template-columns:1fr;}
+  .special-date-row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🏨</div>
+    <div class="logo-text">
+      <h1>Tarifario Oficial</h1>
+      <p>Sistema de Gestión de Precios</p>
+    </div>
+  </div>
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('tarifario',this)">📋 Tarifario</button>
+    <button class="nav-btn" onclick="switchTab('config',this)">⚙️ Configuración</button>
+  </nav>
+  <div class="header-date"><strong id="headerDate"></strong>Hoy</div>
+</header>
+
+<main>
+
+<!-- ══════════ TARIFARIO ══════════ -->
+<div class="tab-content active" id="tab-tarifario">
+  <div class="section-title">Consulta de Precios</div>
+  <p class="section-sub">Seleccione fechas y cantidad de personas para ver tarifas en todas las monedas.</p>
+
+  <div class="search-panel">
+    <div class="search-row">
+      <div class="field-group">
+        <label>📅 Check-in</label>
+        <input type="date" id="dateIn" onchange="calcPrices()">
+      </div>
+      <div class="field-group">
+        <label>📅 Check-out</label>
+        <input type="date" id="dateOut" onchange="calcPrices()">
+      </div>
+      <div class="field-group">
+        <label>👥 Cantidad de personas</label>
+        <div class="people-selector" id="peopleSel">
+          <button class="people-btn active" data-n="1" onclick="setPeople(1,this)">1</button>
+          <button class="people-btn" data-n="2" onclick="setPeople(2,this)">2</button>
+          <button class="people-btn" data-n="3" onclick="setPeople(3,this)">3</button>
+          <button class="people-btn" data-n="4" onclick="setPeople(4,this)">4</button>
+          <button class="people-btn" data-n="5" onclick="setPeople(5,this)">5</button>
+          <button class="people-btn" data-n="6" onclick="setPeople(6,this)">6</button>
+          <button class="people-btn" data-n="7" onclick="setPeople(7,this)">7</button>
+          <button class="people-btn" data-n="8" onclick="setPeople(8,this)">8</button>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>🔍 Buscar</label>
+        <input type="text" id="searchUnit" placeholder="HAB, DPTO, CABAÑA…" oninput="renderCards()">
+      </div>
+      <div>
+        <button class="btn-save" onclick="clearSearch()" style="background:rgba(255,255,255,.08);color:var(--text-dim);font-weight:500;">✕</button>
+      </div>
+    </div>
+
+    <div class="search-info" id="searchInfo" style="display:none;">
+      <div class="info-badge"><span class="label">Noches:</span><span class="value" id="infoNights">—</span></div>
+      <div class="info-badge"><span class="label">Personas:</span><span class="value" id="infoPeople">—</span></div>
+      <div class="info-badge"><span class="label">Período:</span><span class="value" id="infoPeriod">—</span></div>
+      <span class="season-badge" id="seasonBadge">—</span>
+      <div class="breakdown-strip" id="seasonBreakdown"></div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-chip active" onclick="filterType(this,'all')">Todos</button>
+    <button class="filter-chip" onclick="filterType(this,'Habitación')">🛏 Habitaciones</button>
+    <button class="filter-chip" onclick="filterType(this,'Departamento')">🏢 Departamentos</button>
+    <button class="filter-chip" onclick="filterType(this,'Cabaña')">🏡 Cabañas</button>
+  </div>
+
+  <div class="units-grid" id="unitsGrid">
+    <div class="no-dates"><div class="icon">📅</div><p>Seleccione fechas y personas para ver precios.</p></div>
+  </div>
+</div>
+
+<!-- ══════════ CONFIG ══════════ -->
+<div class="tab-content" id="tab-config">
+  <div class="section-title">Configuración</div>
+  <p class="section-sub">Solo Gerencia — Precios base en Guaraníes (₲). Las demás monedas se calculan desde el Guaraní.</p>
+
+  <div class="config-grid">
+
+    <!-- Cotizaciones -->
+    <div class="config-card">
+      <div class="config-card-header">💱 Cotizaciones del Día
+        <span style="font-size:11px;color:var(--text-dim);font-family:'DM Sans';font-weight:400;margin-left:auto;">1 moneda = X ₲</span>
+      </div>
+      <div class="config-card-body">
+        <div class="rate-row">
+          <div class="rate-flag">🇺🇸</div>
+          <div class="rate-info"><div class="rate-name">Dólar Americano</div><div class="rate-code">USD</div></div>
+          <div class="rate-input-wrap">
+            <span class="rate-prefix">₲</span>
+            <input type="number" class="rate-input" id="ratePYG_USD" step="10" placeholder="7800">
+          </div>
+          <span class="rate-suffix">por 1 USD</span>
+        </div>
+        <div class="rate-row">
+          <div class="rate-flag">🇦🇷</div>
+          <div class="rate-info"><div class="rate-name">Peso Argentino</div><div class="rate-code">ARS</div></div>
+          <div class="rate-input-wrap">
+            <span class="rate-prefix">₲</span>
+            <input type="number" class="rate-input" id="ratePYG_ARS" step="0.1" placeholder="6.5">
+          </div>
+          <span class="rate-suffix">por 1 ARS</span>
+        </div>
+        <div class="rate-row">
+          <div class="rate-flag">🇧🇷</div>
+          <div class="rate-info"><div class="rate-name">Real Brasileño</div><div class="rate-code">BRL</div></div>
+          <div class="rate-input-wrap">
+            <span class="rate-prefix">₲</span>
+            <input type="number" class="rate-input" id="ratePYG_BRL" step="1" placeholder="1529">
+          </div>
+          <span class="rate-suffix">por 1 BRL</span>
+        </div>
+        <div class="rate-row">
+          <div class="rate-flag">🇪🇺</div>
+          <div class="rate-info"><div class="rate-name">Euro</div><div class="rate-code">EUR</div></div>
+          <div class="rate-input-wrap">
+            <span class="rate-prefix">₲</span>
+            <input type="number" class="rate-input" id="ratePYG_EUR" step="10" placeholder="8478">
+          </div>
+          <span class="rate-suffix">por 1 EUR</span>
+        </div>
+        <div style="margin-top:14px;padding:10px 12px;background:rgba(201,147,58,.07);border-radius:8px;font-size:11px;color:var(--text-dim);line-height:1.6;">
+          💡 Ingrese cuántos Guaraníes vale cada moneda.<br>
+          Ej: si 1 USD = 7.800 ₲, escriba <strong style="color:var(--gold-light)">7800</strong>.<br>
+          El sistema convierte todos los precios desde ₲.
+        </div>
+      </div>
+    </div>
+
+    <!-- Temporadas -->
+    <div class="config-card">
+      <div class="config-card-header">🏷️ Temporadas & Multiplicadores</div>
+      <div class="config-card-body">
+        <div class="season-row">
+          <div class="season-dot" style="background:#27ae60;"></div>
+          <div class="season-info"><div class="season-name">Temporada BAJA</div><div class="season-desc">Días de semana, temporada tranquila</div></div>
+          <input type="number" class="mult-input" id="multBaja" step="0.05" placeholder="1.00">
+        </div>
+        <div class="season-row">
+          <div class="season-dot" style="background:#f39c12;"></div>
+          <div class="season-info"><div class="season-name">Temporada MEDIA</div><div class="season-desc">Fines de semana normales</div></div>
+          <input type="number" class="mult-input" id="multMedia" step="0.05" placeholder="1.25">
+        </div>
+        <div class="season-row">
+          <div class="season-dot" style="background:#e67e22;"></div>
+          <div class="season-info"><div class="season-name">Temporada ALTA</div><div class="season-desc">Feriados, fines de semana largo</div></div>
+          <input type="number" class="mult-input" id="multAlta" step="0.05" placeholder="1.60">
+        </div>
+        <div class="season-row">
+          <div class="season-dot" style="background:#8e44ad;"></div>
+          <div class="season-info"><div class="season-name">Temporada ESPECIAL</div><div class="season-desc">Carnaval, Año Nuevo, eventos únicos</div></div>
+          <input type="number" class="mult-input" id="multEspecial" step="0.05" placeholder="2.00">
+        </div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);">
+          <div style="font-family:'Playfair Display',serif;font-size:14px;color:#f0a090;margin-bottom:10px;">🏷️ Descuento Máximo Autorizado</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="flex:1;font-size:12px;color:var(--text-dim);line-height:1.5;">
+              Descuento máximo que un recepcionista puede ofrecer.<br>
+              <span style="color:var(--gold-light)">0% = no se permiten descuentos.</span>
+            </div>
+            <div style="position:relative;display:flex;align-items:center;">
+              <input type="number" class="mult-input" id="maxDiscount" min="0" max="50" step="1" placeholder="15" style="width:70px;color:#f0a090;border-color:rgba(231,76,60,.3);">
+              <span style="margin-left:6px;font-size:13px;color:#f0a090;font-weight:700;">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fechas especiales -->
+  <div class="config-card" style="margin-bottom:24px;">
+    <div class="config-card-header">📆 Fechas Especiales y Feriados</div>
+    <div class="config-card-body">
+      <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr auto;gap:8px;margin-bottom:8px;padding:0 12px;">
+        <span style="font-size:10px;color:var(--text-dim);font-weight:600;letter-spacing:.8px;text-transform:uppercase;">Descripción</span>
+        <span style="font-size:10px;color:var(--text-dim);font-weight:600;letter-spacing:.8px;text-transform:uppercase;">Inicio</span>
+        <span style="font-size:10px;color:var(--text-dim);font-weight:600;letter-spacing:.8px;text-transform:uppercase;">Fin</span>
+        <span style="font-size:10px;color:var(--text-dim);font-weight:600;letter-spacing:.8px;text-transform:uppercase;">Temporada</span>
+        <span></span>
+      </div>
+      <div class="special-dates-list" id="specialDatesList"></div>
+      <button class="btn-add" onclick="addSpecialDate()">＋ Agregar fecha especial</button>
+    </div>
+  </div>
+
+  <!-- Precios base tabla -->
+  <div class="config-card" style="margin-bottom:24px;">
+    <div class="config-card-header">💰 Precios Base por Unidad
+      <span style="font-size:11px;color:var(--text-dim);font-family:'DM Sans';font-weight:400;margin-left:auto;">
+        Valores en ₲ Guaraníes — Temporada BAJA — Ocupación estándar
+      </span>
+    </div>
+    <div class="config-card-body">
+      <div style="margin-bottom:16px;padding:12px;background:rgba(201,147,58,.07);border-radius:8px;font-size:12px;color:var(--text-dim);line-height:1.7;">
+        📌 <strong style="color:var(--gold-light)">Capacidad máx.</strong>: personas máximas que admite la unidad (se muestra como no disponible si se supera).<br>
+        📌 <strong style="color:var(--gold-light)">Ocup. estándar</strong>: personas incluidas en el precio base (ej: 2 personas).<br>
+        📌 <strong style="color:var(--gold-light)">Extra/persona (₲)</strong>: costo adicional por cada persona sobre la ocupación estándar, por noche.
+      </div>
+      <div class="prices-table-wrap">
+        <table class="prices-table">
+          <thead>
+            <tr>
+              <th>Unidad</th>
+              <th>Cap. máx.</th>
+              <th>Ocup. estándar</th>
+              <th>Extra/persona ₲</th>
+              <th style="color:#f0a090;">🏷️ Desc. máx %</th>
+              <th style="color:#6de0a0;">🟢 BAJA ₲</th>
+              <th style="color:#f0c060;">🟡 MEDIA ₲</th>
+              <th style="color:#f09050;">🟠 ALTA ₲</th>
+              <th style="color:#c090f0;">🟣 ESPECIAL ₲</th>
+            </tr>
+          </thead>
+          <tbody id="pricesTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="save-bar">
+    <span class="save-msg" id="saveMsg">✓ Configuración guardada</span>
+    <button class="btn-save" onclick="saveConfig()">💾 Guardar configuración</button>
+  </div>
+</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════ UNITS ══════════════
+const UNITS = [
+  {id:'hab1', name:'HAB 1',         type:'Habitación'},
+  {id:'hab2', name:'HAB 2',         type:'Habitación'},
+  {id:'hab3', name:'HAB 3',         type:'Habitación'},
+  {id:'hab4', name:'HAB 4',         type:'Habitación'},
+  {id:'hab6', name:'HAB 6',         type:'Habitación'},
+  {id:'hab7', name:'HAB 7',         type:'Habitación'},
+  {id:'hab8', name:'HAB 8',         type:'Habitación'},
+  {id:'hab9', name:'HAB 9',         type:'Habitación'},
+  {id:'hab10',name:'HAB 10',        type:'Habitación'},
+  {id:'dp1101',name:'DPTO. 1101',   type:'Departamento'},
+  {id:'dp302', name:'DPTO. 302',    type:'Departamento'},
+  {id:'dp504', name:'DPTO 504',     type:'Departamento'},
+  {id:'dp6d',  name:'DPTO 6D',      type:'Departamento'},
+  {id:'cbrenty',name:'CABAÑA RENTY',    type:'Cabaña'},
+  {id:'cbanto', name:'CABAÑA ANTONELLA',type:'Cabaña'},
+];
+
+// Default prices in PYG
+const DEFAULT_CONFIG = {
+  // 1 unit of currency = X guaraníes
+  rates: { usd: 7800, ars: 6.5, brl: 1529, eur: 8478 },
+  multipliers: { baja:1.0, media:1.25, alta:1.60, especial:2.0 },
+  maxDiscount: 15, // % global máximo de descuento (0 = sin descuento permitido)
+  prices: {
+    // discountMax: override por unidad (0 = usa el global)
+    hab1:    {maxPeople:2, stdOcc:2, extraPYG:60000, discountMax:0, baja:390000, media:488000, alta:624000, especial:780000},
+    hab2:    {maxPeople:2, stdOcc:2, extraPYG:60000, discountMax:0, baja:390000, media:488000, alta:624000, especial:780000},
+    hab3:    {maxPeople:2, stdOcc:2, extraPYG:60000, discountMax:0, baja:390000, media:488000, alta:624000, especial:780000},
+    hab4:    {maxPeople:2, stdOcc:2, extraPYG:60000, discountMax:0, baja:390000, media:488000, alta:624000, especial:780000},
+    hab6:    {maxPeople:2, stdOcc:2, extraPYG:65000, discountMax:0, baja:420000, media:525000, alta:672000, especial:840000},
+    hab7:    {maxPeople:2, stdOcc:2, extraPYG:65000, discountMax:0, baja:420000, media:525000, alta:672000, especial:840000},
+    hab8:    {maxPeople:2, stdOcc:2, extraPYG:65000, discountMax:0, baja:420000, media:525000, alta:672000, especial:840000},
+    hab9:    {maxPeople:2, stdOcc:2, extraPYG:65000, discountMax:0, baja:420000, media:525000, alta:672000, especial:840000},
+    hab10:   {maxPeople:3, stdOcc:2, extraPYG:70000, discountMax:0, baja:450000, media:563000, alta:720000, especial:900000},
+    dp1101:  {maxPeople:6, stdOcc:4, extraPYG:80000, discountMax:0, baja:700000, media:875000,alta:1120000,especial:1400000},
+    dp302:   {maxPeople:5, stdOcc:3, extraPYG:75000, discountMax:0, baja:620000, media:775000,alta: 992000,especial:1240000},
+    dp504:   {maxPeople:5, stdOcc:3, extraPYG:75000, discountMax:0, baja:650000, media:813000,alta:1040000,especial:1300000},
+    dp6d:    {maxPeople:4, stdOcc:2, extraPYG:75000, discountMax:0, baja:600000, media:750000,alta: 960000,especial:1200000},
+    cbrenty: {maxPeople:8, stdOcc:4, extraPYG:90000, discountMax:0, baja:950000,media:1188000,alta:1520000,especial:1900000},
+    cbanto:  {maxPeople:8, stdOcc:4, extraPYG:95000, discountMax:0,baja:1000000,media:1250000,alta:1600000,especial:2000000},
+  },
+  specialDates:[
+    {name:'Semana Santa 2025',   start:'2025-04-17',end:'2025-04-20',season:'alta'},
+    {name:'Día del Trabajador',  start:'2025-05-01',end:'2025-05-01',season:'media'},
+    {name:'Fundación Asunción',  start:'2025-08-15',end:'2025-08-15',season:'media'},
+    {name:'Finde Largo Oct 2025',start:'2025-10-31',end:'2025-11-02',season:'alta'},
+    {name:'Navidad 2025',        start:'2025-12-24',end:'2025-12-26',season:'especial'},
+    {name:'Año Nuevo 2026',      start:'2025-12-31',end:'2026-01-02',season:'especial'},
+    {name:'Carnaval 2026',       start:'2026-02-14',end:'2026-02-17',season:'alta'},
+  ]
+};
+
+let config = JSON.parse(localStorage.getItem('tarifario_v2') || 'null') || DEFAULT_CONFIG;
+let activeType = 'all';
+let selectedPeople = 1;
+let calcResult = null;
+
+// ══════════════ INIT ══════════════
+document.addEventListener('DOMContentLoaded', () => {
+  updateHeaderDate();
+  setInterval(updateHeaderDate, 60000);
+  populateConfigForm();
+  buildPricesTable();
+  renderSpecialDates();
+});
+
+function updateHeaderDate() {
+  const now = new Date();
+  document.getElementById('headerDate').textContent =
+    now.toLocaleDateString('es-PY',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+
+// ══════════════ TABS ══════════════
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ══════════════ PEOPLE ══════════════
+function setPeople(n, btn) {
+  selectedPeople = n;
+  document.querySelectorAll('.people-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (calcResult) calcPrices();
+}
+
+// ══════════════ SEASON DETECTION ══════════════
+function getSeason(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  for (const sd of config.specialDates) {
+    if (!sd.start || !sd.end || !sd.season) continue;
+    if (d >= new Date(sd.start+'T00:00:00') && d <= new Date(sd.end+'T23:59:59')) return sd.season;
+  }
+  const dow = d.getDay();
+  return (dow===0||dow===6) ? 'media' : 'baja';
+}
+
+function getSeasonBreakdown(dateIn, dateOut) {
+  const counts = {baja:0,media:0,alta:0,especial:0};
+  const cur = new Date(dateIn+'T12:00:00');
+  const end = new Date(dateOut+'T12:00:00');
+  while (cur < end) {
+    counts[getSeason(cur.toISOString().slice(0,10))]++;
+    cur.setDate(cur.getDate()+1);
+  }
+  const priority = ['especial','alta','media','baja'];
+  const dominant = priority.find(p => counts[p] > 0) || 'baja';
+  return {dominant, counts};
+}
+
+// ══════════════ PRICE CALC (PYG base) ══════════════
+function calcUnitTotal(unitId, dateIn, dateOut, people) {
+  const p = config.prices[unitId];
+  let totalPYG = 0;
+  const cur = new Date(dateIn+'T12:00:00');
+  const end = new Date(dateOut+'T12:00:00');
+  while (cur < end) {
+    const s = getSeason(cur.toISOString().slice(0,10));
+    let nightPYG = p[s];
+    // Extra persons above standard occupancy
+    const extra = Math.max(0, people - p.stdOcc);
+    nightPYG += extra * p.extraPYG;
+    totalPYG += nightPYG;
+    cur.setDate(cur.getDate()+1);
+  }
+  return totalPYG;
+}
+
+// Convert from PYG to other currencies
+function pygTo(amount, currency) {
+  // config.rates[currency] = how many PYG = 1 unit of that currency
+  return amount / config.rates[currency];
+}
+
+// ══════════════ SEARCH / CALC ══════════════
+function calcPrices() {
+  const dateIn  = document.getElementById('dateIn').value;
+  const dateOut = document.getElementById('dateOut').value;
+  if (!dateIn || !dateOut || dateOut <= dateIn) {
+    document.getElementById('searchInfo').style.display = 'none';
+    calcResult = null; renderCards(); return;
+  }
+  const nights = Math.round((new Date(dateOut)-new Date(dateIn))/86400000);
+  const {dominant, counts} = getSeasonBreakdown(dateIn, dateOut);
+  const fmt = d => new Date(d+'T12:00:00').toLocaleDateString('es-PY',{day:'2-digit',month:'short'});
+
+  document.getElementById('infoNights').textContent  = nights+(nights===1?' noche':' noches');
+  document.getElementById('infoPeople').textContent  = selectedPeople+(selectedPeople===1?' persona':' personas');
+  document.getElementById('infoPeriod').textContent  = `${fmt(dateIn)} → ${fmt(dateOut)}`;
+
+  const badge = document.getElementById('seasonBadge');
+  const lbls  = {baja:'🟢 Temporada BAJA',media:'🟡 Temporada MEDIA',alta:'🟠 Temporada ALTA',especial:'🟣 Temporada ESPECIAL'};
+  badge.textContent = lbls[dominant];
+  badge.className   = 'season-badge season-'+dominant;
+
+  const bd = document.getElementById('seasonBreakdown');
+  const multi = Object.values(counts).filter(v=>v>0).length > 1;
+  bd.innerHTML = multi
+    ? Object.entries(counts).filter(([,v])=>v>0).map(([k,v])=>`<span class="breakdown-item">${v}n ${k}</span>`).join('')
+    : '';
+
+  document.getElementById('searchInfo').style.display = 'flex';
+  calcResult = {dateIn, dateOut, nights, dominant};
+  renderCards();
+}
+
+function clearSearch() {
+  document.getElementById('dateIn').value='';
+  document.getElementById('dateOut').value='';
+  document.getElementById('searchUnit').value='';
+  document.getElementById('searchInfo').style.display='none';
+  calcResult=null; renderCards();
+}
+
+// ══════════════ FILTER ══════════════
+function filterType(btn, type) {
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  activeType = type;
+  renderCards();
+}
+
+// ══════════════ RENDER CARDS ══════════════
+function renderCards() {
+  const grid   = document.getElementById('unitsGrid');
+  const search = document.getElementById('searchUnit').value.toLowerCase();
+
+  if (!calcResult) {
+    grid.innerHTML = `<div class="no-dates"><div class="icon">📅</div><p>Seleccione fechas y cantidad de personas para ver precios.</p></div>`;
+    return;
+  }
+
+  const {dateIn, dateOut, nights} = calcResult;
+  const {rates} = config;
+
+  let filtered = UNITS.filter(u => {
+    if (activeType!=='all' && u.type!==activeType) return false;
+    if (search && !u.name.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="no-dates"><div class="icon">🔍</div><p>No se encontraron unidades.</p></div>`;
+    return;
+  }
+
+  const seasonColors = {baja:'#27ae60',media:'#f39c12',alta:'#e67e22',especial:'#8e44ad'};
+
+  // Formatters
+  const fmtPYG = v => '₲ ' + Math.round(v).toLocaleString('es-PY');
+  const fmtUSD = v => '$ '  + v.toLocaleString('es-PY',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtARS = v => '$ '  + Math.round(v).toLocaleString('es-PY');
+  const fmtBRL = v => 'R$ ' + v.toLocaleString('es-PY',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtEUR = v => '€ '  + v.toLocaleString('es-PY',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  grid.innerHTML = filtered.map((u, idx) => {
+    const p = config.prices[u.id];
+    const unavail = selectedPeople > p.maxPeople;
+    const totalPYG = unavail ? 0 : calcUnitTotal(u.id, dateIn, dateOut, selectedPeople);
+    const pnPYG = unavail ? 0 : totalPYG / nights;
+    const {dominant} = getSeasonBreakdown(dateIn, dateOut);
+    const extraPax = Math.max(0, selectedPeople - p.stdOcc);
+
+    return `
+    <div class="unit-card${unavail?' unavailable':''}" style="animation-delay:${idx*.04}s">
+      <div class="card-header">
+        <div>
+          <div class="card-name">${u.name}</div>
+          <div class="card-type">${u.type}</div>
+        </div>
+        <div class="card-meta">
+          ${unavail
+            ? `<span class="unavail-badge">⚠ No disponible</span><span class="cap-badge">máx ${p.maxPeople} personas</span>`
+            : `<div class="card-season-dot" style="background:${seasonColors[dominant]};box-shadow:0 0 8px ${seasonColors[dominant]}66;"></div>
+               <span class="cap-badge">máx ${p.maxPeople} · estándar ${p.stdOcc}</span>`}
+        </div>
+      </div>
+      ${unavail ? `<div class="card-body"><p style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px 0;">Esta unidad admite hasta <strong>${p.maxPeople} personas</strong>.<br>Seleccione menos personas o una unidad más grande.</p></div>`
+      : `<div class="card-body">
+          <div class="price-main">
+            <span class="price-currency">₲</span>
+            <span class="price-value">${Math.round(pnPYG).toLocaleString('es-PY')}</span>
+          </div>
+          <div class="price-label">por noche · ${nights} noche${nights>1?'s':''} · ${selectedPeople} persona${selectedPeople>1?'s':''}</div>
+          ${extraPax>0 ? `<span class="extra-persons-note">+${fmtPYG(extraPax*p.extraPYG)}/noche por ${extraPax} persona${extraPax>1?'s':''} adicional${extraPax>1?'es':''}</span>` : ''}
+          <div class="price-total-box">
+            <div>
+              <div class="t-label">Total de la estadía</div>
+              <div style="font-size:11px;color:var(--text-dim);">${nights} noche${nights>1?'s':''} · ${selectedPeople} persona${selectedPeople>1?'s':''}</div>
+            </div>
+            <div class="t-value">${fmtPYG(totalPYG)}</div>
+          </div>
+          <div class="currency-grid">
+            <div class="currency-item">
+              <div style="display:flex;align-items:center;gap:5px;"><span>🇺🇸</span><span class="c-sym">USD</span></div>
+              <div class="c-val">${fmtUSD(pygTo(pnPYG,'usd'))}/noche</div>
+              <div class="c-total">Total: ${fmtUSD(pygTo(totalPYG,'usd'))}</div>
+            </div>
+            <div class="currency-item">
+              <div style="display:flex;align-items:center;gap:5px;"><span>🇦🇷</span><span class="c-sym">ARS</span></div>
+              <div class="c-val">${fmtARS(pygTo(pnPYG,'ars'))}/noche</div>
+              <div class="c-total">Total: ${fmtARS(pygTo(totalPYG,'ars'))}</div>
+            </div>
+            <div class="currency-item">
+              <div style="display:flex;align-items:center;gap:5px;"><span>🇧🇷</span><span class="c-sym">BRL</span></div>
+              <div class="c-val">${fmtBRL(pygTo(pnPYG,'brl'))}/noche</div>
+              <div class="c-total">Total: ${fmtBRL(pygTo(totalPYG,'brl'))}</div>
+            </div>
+            <div class="currency-item">
+              <div style="display:flex;align-items:center;gap:5px;"><span>🇪🇺</span><span class="c-sym">EUR</span></div>
+              <div class="c-val">${fmtEUR(pygTo(pnPYG,'eur'))}/noche</div>
+              <div class="c-total">Total: ${fmtEUR(pygTo(totalPYG,'eur'))}</div>
+            </div>
+          </div>
+
+          ${(()=>{
+            const maxPct = p.discountMax > 0 ? p.discountMax : config.maxDiscount;
+            if (maxPct <= 0) return '';
+            const presets = [5,10,maxPct].filter((v,i,a)=>a.indexOf(v)===i && v<=maxPct);
+            const minPYGnight = pnPYG * (1 - maxPct/100);
+            const minTotalPYG = totalPYG * (1 - maxPct/100);
+            const uid = u.id + '_' + idx;
+            return `
+            <button class="discount-toggle" id="dtoggle_${uid}" onclick="toggleDiscount('${uid}')">
+              <span>🏷️ Ver precio mínimo con descuento — hasta ${maxPct}% OFF</span>
+              <span class="arrow">▼</span>
+            </button>
+            <div class="discount-panel" id="dpanel_${uid}">
+              <div class="discount-header">💸 Simulador de Descuento</div>
+              <div class="discount-pct-row" id="dbtns_${uid}">
+                ${presets.map(pct=>`<button class="dpct-btn" data-pct="${pct}" onclick="applyDiscount('${uid}',${pct},${totalPYG},${nights})">${pct}% OFF</button>`).join('')}
+                <span style="font-size:11px;color:var(--text-dim);align-self:center;margin-left:4px;">Máximo autorizado: <strong style="color:#f0a090">${maxPct}%</strong></span>
+              </div>
+              <div class="discount-result" id="dresult_${uid}">
+                <div style="text-align:center;color:var(--text-dim);font-size:12px;padding:8px 0;">
+                  Seleccione un porcentaje de descuento arriba
+                </div>
+              </div>
+              <div class="dr-note">⚠ Este panel es solo de referencia para el recepcionista.<br>El descuento máximo autorizado por Gerencia es del <strong>${maxPct}%</strong>.</div>
+            </div>`;
+          })()}
+        </div>`}
+    </div>`;
+  }).join('');
+}
+
+// ══════════════ CONFIG FORM ══════════════
+function populateConfigForm() {
+  document.getElementById('ratePYG_USD').value = config.rates.usd;
+  document.getElementById('ratePYG_ARS').value = config.rates.ars;
+  document.getElementById('ratePYG_BRL').value = config.rates.brl;
+  document.getElementById('ratePYG_EUR').value = config.rates.eur;
+  document.getElementById('multBaja').value     = config.multipliers.baja;
+  document.getElementById('multMedia').value    = config.multipliers.media;
+  document.getElementById('multAlta').value     = config.multipliers.alta;
+  document.getElementById('multEspecial').value = config.multipliers.especial;
+  document.getElementById('maxDiscount').value  = config.maxDiscount ?? 15;
+}
+
+function buildPricesTable() {
+  const tbody = document.getElementById('pricesTableBody');
+  tbody.innerHTML = UNITS.map(u => {
+    const p = config.prices[u.id];
+    return `<tr>
+      <td>${u.name}</td>
+      <td><input class="cap-input" type="number" min="1" max="20" id="cap_${u.id}" value="${p.maxPeople}"></td>
+      <td><input class="cap-input" type="number" min="1" max="20" id="std_${u.id}" value="${p.stdOcc}"></td>
+      <td><input class="price-td-input" type="number" step="1000" id="extra_${u.id}" value="${p.extraPYG}"></td>
+      <td><input class="cap-input" type="number" min="0" max="50" step="1" id="disc_${u.id}" value="${p.discountMax||0}" style="color:#f0a090;" title="0 = usa descuento global"></td>
+      ${['baja','media','alta','especial'].map(s=>`
+        <td><input class="price-td-input" type="number" step="1000" id="price_${u.id}_${s}" value="${p[s]}"></td>
+      `).join('')}
+    </tr>`;
+  }).join('');
+}
+
+function renderSpecialDates() {
+  document.getElementById('specialDatesList').innerHTML = config.specialDates.map((sd,i)=>`
+    <div class="special-date-row">
+      <input type="text" value="${sd.name}" placeholder="Ej: Semana Santa" oninput="updateSD(${i},'name',this.value)">
+      <input type="date" value="${sd.start}" oninput="updateSD(${i},'start',this.value)">
+      <input type="date" value="${sd.end}"   oninput="updateSD(${i},'end',this.value)">
+      <select onchange="updateSD(${i},'season',this.value)">
+        <option value="baja"     ${sd.season==='baja'    ?'selected':''}>🟢 BAJA</option>
+        <option value="media"    ${sd.season==='media'   ?'selected':''}>🟡 MEDIA</option>
+        <option value="alta"     ${sd.season==='alta'    ?'selected':''}>🟠 ALTA</option>
+        <option value="especial" ${sd.season==='especial'?'selected':''}>🟣 ESPECIAL</option>
+      </select>
+      <button class="delete-btn" onclick="deleteSD(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function updateSD(i,f,v){config.specialDates[i][f]=v;}
+function deleteSD(i){config.specialDates.splice(i,1);renderSpecialDates();}
+function addSpecialDate(){
+  config.specialDates.push({name:'',start:'',end:'',season:'alta'});
+  renderSpecialDates();
+  document.getElementById('specialDatesList').lastElementChild?.querySelector('input')?.focus();
+}
+
+function saveConfig() {
+  config.rates.usd = parseFloat(document.getElementById('ratePYG_USD').value)||7800;
+  config.rates.ars = parseFloat(document.getElementById('ratePYG_ARS').value)||6.5;
+  config.rates.brl = parseFloat(document.getElementById('ratePYG_BRL').value)||1529;
+  config.rates.eur = parseFloat(document.getElementById('ratePYG_EUR').value)||8478;
+  config.multipliers.baja     = parseFloat(document.getElementById('multBaja').value)||1.0;
+  config.multipliers.media    = parseFloat(document.getElementById('multMedia').value)||1.25;
+  config.multipliers.alta     = parseFloat(document.getElementById('multAlta').value)||1.60;
+  config.multipliers.especial = parseFloat(document.getElementById('multEspecial').value)||2.0;
+
+  config.maxDiscount = parseFloat(document.getElementById('maxDiscount').value) ?? 15;
+
+  UNITS.forEach(u => {
+    const p = config.prices[u.id];
+    p.maxPeople   = parseInt(document.getElementById(`cap_${u.id}`).value)||2;
+    p.stdOcc      = parseInt(document.getElementById(`std_${u.id}`).value)||2;
+    p.extraPYG    = parseFloat(document.getElementById(`extra_${u.id}`).value)||0;
+    p.discountMax = parseFloat(document.getElementById(`disc_${u.id}`).value)||0;
+    ['baja','media','alta','especial'].forEach(s => {
+      p[s] = parseFloat(document.getElementById(`price_${u.id}_${s}`).value)||0;
+    });
+  });
+
+  localStorage.setItem('tarifario_v2', JSON.stringify(config));
+  const msg = document.getElementById('saveMsg');
+  msg.classList.add('visible');
+  setTimeout(()=>msg.classList.remove('visible'),3000);
+  showToast('✓ Guardado. Cotizaciones y precios actualizados.');
+  if (calcResult) calcPrices();
+}
+
+function toggleDiscount(uid) {
+  const toggle = document.getElementById('dtoggle_'+uid);
+  const panel  = document.getElementById('dpanel_'+uid);
+  toggle.classList.toggle('open');
+  panel.classList.toggle('open');
+}
+
+function applyDiscount(uid, pct, totalPYG, nights) {
+  // Highlight active button
+  document.querySelectorAll(`#dbtns_${uid} .dpct-btn`).forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.pct) === pct);
+  });
+  const discTotal  = totalPYG * (1 - pct/100);
+  const discNight  = discTotal / nights;
+  const fmtPYG = v => '₲ ' + Math.round(v).toLocaleString('es-PY');
+  const fmtUSD = v => '$ '  + v.toLocaleString('es-PY',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtARS = v => '$ '  + Math.round(v).toLocaleString('es-PY');
+  const fmtBRL = v => 'R$ ' + v.toLocaleString('es-PY',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtEUR = v => '€ '  + v.toLocaleString('es-PY',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const saved = totalPYG - discTotal;
+  document.getElementById('dresult_'+uid).innerHTML = `
+    <div class="dr-row">
+      <span class="dr-label">Descuento aplicado</span>
+      <span class="dr-val" style="color:#f0c060;font-size:18px;">${pct}% OFF</span>
+    </div>
+    <div class="dr-row">
+      <span class="dr-label">🏷️ Precio mínimo / noche</span>
+      <span class="dr-val main">${fmtPYG(discNight)}</span>
+    </div>
+    <div class="dr-row">
+      <span class="dr-label">💰 Total mínimo estadía</span>
+      <span class="dr-val main">${fmtPYG(discTotal)}</span>
+    </div>
+    <div class="dr-row">
+      <span class="dr-label">🇺🇸 USD</span>
+      <span class="dr-val">${fmtUSD(pygTo(discTotal,'usd'))} total / ${fmtUSD(pygTo(discNight,'usd'))}/noche</span>
+    </div>
+    <div class="dr-row">
+      <span class="dr-label">🇦🇷 ARS</span>
+      <span class="dr-val">${fmtARS(pygTo(discTotal,'ars'))} total / ${fmtARS(pygTo(discNight,'ars'))}/noche</span>
+    </div>
+    <div class="dr-row">
+      <span class="dr-label">🇧🇷 BRL</span>
+      <span class="dr-val">${fmtBRL(pygTo(discTotal,'brl'))} total / ${fmtBRL(pygTo(discNight,'brl'))}/noche</span>
+    </div>
+    <div class="dr-row">
+      <span class="dr-label">🇪🇺 EUR</span>
+      <span class="dr-val">${fmtEUR(pygTo(discTotal,'eur'))} total / ${fmtEUR(pygTo(discNight,'eur'))}/noche</span>
+    </div>
+    <div class="dr-row" style="margin-top:4px;background:rgba(0,0,0,.2);border-radius:6px;padding:6px 8px;">
+      <span class="dr-label" style="color:var(--green);">💚 Ahorro del cliente</span>
+      <span class="dr-val" style="color:var(--green);">${fmtPYG(saved)} (${pct}%)</span>
+    </div>
+  `;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
